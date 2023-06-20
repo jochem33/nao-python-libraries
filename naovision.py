@@ -6,9 +6,10 @@ from PIL import Image
 import cv2
 import numpy as np
 
-def findCircle(imagepath):
+def findOrangeBall(pil_image):
     # img = imagepath
-    img = cv2.imread(imagepath)
+    open_cv_image = np.array(pil_image) 
+    img = open_cv_image[:, :, ::-1].copy() 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv,(5, 100, 20), (50, 255, 255) )
 
@@ -47,8 +48,9 @@ def findCircle(imagepath):
 
     # cv2.imshow("orange", mask);
     # cv2.waitKey(0);cv2.destroyAllWindows()
-
-    return(x, y, r, img.shape)
+    if((x, y, r) != (None, None, None)):
+        return(False, 0, 0, 0, img.shape)
+    return(True, x, y, r, img.shape)
 
 
 
