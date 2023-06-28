@@ -6,12 +6,17 @@ from PIL import Image
 import cv2
 import numpy as np
 
+IMGHEIGHT = 480
+IMGWIDTH = 640
+
 def findOrangeBall(pil_image):
     # img = imagepath
     open_cv_image = np.array(pil_image) 
     img = open_cv_image[:, :, ::-1].copy() 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv,(5, 100, 20), (50, 255, 255) )
+    blur = cv2.GaussianBlur(hsv,(5,5),0)
+
+    mask = cv2.inRange(blur,(0, 120, 70), (200, 255, 255) )
 
     im2, contours = cv2.findContours(mask, 1, 2)
 
@@ -19,7 +24,7 @@ def findOrangeBall(pil_image):
 
     circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1.2, 200, param1=100, param2=5, minRadius=5, maxRadius=150)
 
-    best_percentage_orange = 0.3
+    best_percentage_orange = 0.15
     x = None
     y = None
     r = None
@@ -48,7 +53,7 @@ def findOrangeBall(pil_image):
 
     # cv2.imshow("orange", mask);
     # cv2.waitKey(0);cv2.destroyAllWindows()
-    if((x, y, r) != (None, None, None)):
+    if((x, y, r) == (None, None, None)):
         return(False, 0, 0, 0, img.shape)
     return(True, x, y, r, img.shape)
 
